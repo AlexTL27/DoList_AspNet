@@ -1,0 +1,27 @@
+﻿@model CTarea
+
+@{
+    ViewData["Title"] = "AgregarTarea";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form asp-controller="Tareas"
+      asp-action="AgregarTarea"
+      method="post">
+
+    <label class="form-label">Tarea</label>
+
+    <input asp-for="Nombre" type="text"
+           class="form-control"
+           placeholder="Ingresa tu tarea" />
+
+    <br />
+
+    <input type="submit"
+           value="Subir"
+           class="btn btn-success" />
+
+    <a asp-controller="Tareas"
+       asp-action="ListarTareas" class="btn btn-primary">Regresar a Tareas</a>
+</form>
+

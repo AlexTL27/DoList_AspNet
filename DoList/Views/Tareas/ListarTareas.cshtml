@@ -1,0 +1,75 @@
+﻿@using DoList.Models.ViewModels
+@model TareaVM
+@{
+    ViewData["Title"] = "ListarTareas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Tareas</h2>
+<table class="table">
+    <thead class="table-light text-center ">
+        <tr>
+            <th>Num</th>
+            <th>Tarea</th>
+            <th >Fecha</th>
+            <th>Terminar</th>
+        </tr>
+    </thead>
+    <tbody class="table-light text-center">
+        @foreach(var item in Model.pendientes)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Nombre</td>
+                <td>@item.Fecha</td>
+
+                <td class="progress-bar">
+                    <form asp-action="CompletarTarea" asp-controller="Tareas"
+                    method="post">
+
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button class="btn btn-success text-white bi-check-lg"> </button>
+                    
+                    </form>  
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<h2>Tareas Completadas</h2>
+<table class="table">
+    <thead class="table-light text-center">
+        <tr>
+            <th>Num</th>
+            <th>Tarea</th>
+            <th >Fecha</th>
+            <th >Eliminar</th>
+        </tr>
+    </thead>
+    <tbody class="table-light text-center">
+        @foreach (var item in Model.terminadas)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Nombre</td>
+                <td>@item.Fecha</td>
+
+                <td class="progress-bar">
+                    <form asp-action="EliminarTarea" asp-controller="Tareas"
+                          method="post">
+
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button class="btn btn-danger text-white">X</button>
+
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Tareas"
+   asp-action="AgregarTarea" class="btn btn-primary">Agregar Tarea</a>
+
