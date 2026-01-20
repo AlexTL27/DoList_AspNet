@@ -1,0 +1,95 @@
+﻿using DoList.Datos;
+using DoList.Models;
+using DoList.Models.ViewModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Threading.Tasks;
+
+
+namespace DoList.Controllers
+{
+    public class LoginController : Controller
+    {
+        private readonly CDatos datos;
+
+        public LoginController(CDatos datos)
+        {
+            this.datos = datos;
+        }
+
+
+        public IActionResult Registrar() 
+        {
+            return View(
+                new RegistroVM
+                {
+                    Usuario = new CUsuario(),
+                    MensajeError = null
+                }
+                );
+        }
+
+        [HttpPost]
+        public IActionResult Registrar(RegistroVM model)
+        {
+            var res = datos.CrearUsuario(model.Usuario);
+
+            if (res.Exito)
+            {
+                return RedirectToAction("IniciarSesion");
+            }
+
+
+            model.MensajeError = res.Descripcion;
+            return View(model);
+        }
+
+
+        public IActionResult IniciarSesion() 
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> IniciarSesion(CUsuario user)
+        {
+            var res = datos.IniciarSesion(user);
+            if (!res.Exito)
+            {
+                ViewBag.Error = res.Descripcion;
+                return View();
+                
+            }
+            //Creamos los claims 
+            var claims = new List<Claim>() {
+
+                new Claim(ClaimTypes.NameIdentifier, res.UsuarioId.ToString()),
+                new Claim(ClaimTypes.Name, res.Nombre)
+            };
+
+ 
+
+            foreach(var rol in res.Roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, rol));
+            }
+
+
+
+            //Crear identidad, pueden haber varias en el usuario
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+
+            //Crear el usuario
+            var principal = new ClaimsPrincipal(identity);
+
+            //Ahora la cookie
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            return RedirectToAction("ListarTareas", "Tareas");
+           
+        }
+    }
+}

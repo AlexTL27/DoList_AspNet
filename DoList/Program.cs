@@ -1,5 +1,7 @@
 using DoList.Datos;
 
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Options;
 namespace DoList
 {
     public class Program
@@ -12,11 +14,22 @@ namespace DoList
             //Conexion a la BD
             builder.Services.AddScoped<Conexion>();
             builder.Services.AddScoped<CDatos>();
-
+           
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(op => 
+            {
+                op.LoginPath = "/Login/IniciarSesion";
+                op.LogoutPath = "/Login/CerrarSesion";
+                op.AccessDeniedPath = "/Login/AccesoDenegado";
+                op.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                op.SlidingExpiration = true;
+            });
+           
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -32,11 +45,12 @@ namespace DoList
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Tareas}/{action=ListarTareas}/{id?}");
+                pattern: "{controller=Login}/{action=IniciarSesion}/{id?}");
 
             app.Run();
         }
