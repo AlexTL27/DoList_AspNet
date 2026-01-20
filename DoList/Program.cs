@@ -23,7 +23,7 @@ namespace DoList
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(op => 
             {
                 op.LoginPath = "/Login/IniciarSesion";
-                op.LogoutPath = "/Login/CerrarSesion";
+                //op.LogoutPath = "/Login/CerrarSesion";
                 op.AccessDeniedPath = "/Login/AccesoDenegado";
                 op.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                 op.SlidingExpiration = true;

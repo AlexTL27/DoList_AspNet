@@ -4,6 +4,7 @@ using DoList.Models.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -34,6 +35,12 @@ namespace DoList.Controllers
         [HttpPost]
         public IActionResult Registrar(RegistroVM model)
         {
+            if (!ModelState.IsValid) 
+            {
+                //El modelo no es valido
+                return View(model);
+            }
+
             var res = datos.CrearUsuario(model.Usuario);
 
             if (res.Exito)
@@ -49,18 +56,32 @@ namespace DoList.Controllers
 
         public IActionResult IniciarSesion() 
         {
-            return View();
+            return View( new RegistroVM() { Usuario = new CUsuario(),MensajeError = null});
         }
 
         [HttpPost]
-        public async Task<IActionResult> IniciarSesion(CUsuario user)
+        public async Task<IActionResult> IniciarSesion(RegistroVM model)
         {
-            var res = datos.IniciarSesion(user);
+            //Modelo no valido
+            if (!ModelState.IsValid) 
+            {
+                return View(model);
+            }
+
+            //Para la cookie
+            LoginVM res = datos.IniciarSesion(model.Usuario);
+
+            //Pasar el mensaje
+            RegistroVM iniciar = new RegistroVM();
+
+
+            //Algo fallo durante la CDatos, el mensaje sera mostrado
             if (!res.Exito)
             {
-                ViewBag.Error = res.Descripcion;
-                return View();
                 
+               iniciar.MensajeError = res.Descripcion;
+                return View(iniciar);
+
             }
             //Creamos los claims 
             var claims = new List<Claim>() {
@@ -90,6 +111,13 @@ namespace DoList.Controllers
 
             return RedirectToAction("ListarTareas", "Tareas");
            
+        }
+
+
+        public async Task<IActionResult> Salir()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Registrar");
         }
     }
 }

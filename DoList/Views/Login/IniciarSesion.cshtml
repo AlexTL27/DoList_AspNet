@@ -1,16 +1,28 @@
-﻿@model CUsuario
+﻿@using DoList.Models.ViewModels
+@model RegistroVM
 
 @{
 	ViewData["Title"] = "IniciarSesion";
 	Layout = "~/Views/Shared/_LoginLayout.cshtml";
 }
 
+@* El mensaje que llega del modelo sera pintado en un Span *@
+@if (!string.IsNullOrEmpty(Model.MensajeError))
+{
+	<div class="alert alert-danger">
+		@Model.MensajeError
+	</div>
+}
+
+
 <form id="login-form" asp-controller="Login" asp-action="IniciarSesion" method="post" role="form" style="display: block;">
 	<div class="form-group">
-		<input type="text" id="username" tabindex="1" class="form-control" placeholder="Usuario" asp-for="Nombre">
+		<input type="text" id="username" tabindex="1" class="form-control" placeholder="Usuario" asp-for="Usuario.Nombre">
+		<span asp-validation-for="Usuario.Nombre" class="text-danger"></span>
 	</div>
 	<div class="form-group">
-		<input type="password" id="password" tabindex="2" class="form-control" placeholder="Contraseña" asp-for="Password">
+		<input type="password" id="password" tabindex="2" class="form-control" placeholder="Contraseña" asp-for="Usuario.Password">
+		<span asp-validation-for="Usuario.Password" class="text-danger"></span>
 	</div>
 
 	<div class="form-group">

@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using DoList.Models;
 using DoList.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 namespace DoList.Controllers
 {
+    [Authorize]
     public class TareasController : Controller
     {
         private readonly CDatos datos;

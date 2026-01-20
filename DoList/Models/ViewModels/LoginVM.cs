@@ -1,6 +1,6 @@
-﻿namespace DoList.Datos
+﻿namespace DoList.Models.ViewModels
 {
-    public class CResultado
+    public class LoginVM
     {
 
         public bool Exito{ get; set; }

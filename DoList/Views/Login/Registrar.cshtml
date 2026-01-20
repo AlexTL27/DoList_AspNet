@@ -16,9 +16,12 @@
 <form id="register-form" asp-controller="Login" asp-action="Registrar" method="post" role="form">
     <div class="form-group">
         <input type="text"  id="username" tabindex="1" class="form-control" placeholder="Usuario" asp-for="Usuario.Nombre">
+        <span asp-validation-for="Usuario.Nombre" class="text-danger"></span>
     </div>
     <div class="form-group">
         <input type="password" id="password" tabindex="2" class="form-control" placeholder="Contraseña" asp-for="Usuario.Password">
+        <span asp-validation-for="Usuario.Password" class="text-danger"></span>
+
     </div>
     <div class="form-group">
         <div class="row">

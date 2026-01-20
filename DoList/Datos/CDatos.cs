@@ -1,5 +1,6 @@
 ﻿using BCrypt.Net;
 using DoList.Models;
+using DoList.Models.ViewModels;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Data.SqlClient;
@@ -102,9 +103,9 @@ namespace DoList.Datos
         }
 
 
-        public CResultado CrearUsuario(CUsuario user)
+        public LoginVM CrearUsuario(CUsuario user)
         {
-            CResultado res = new CResultado();
+            LoginVM res = new LoginVM();
 
             using (SqlConnection conexion = new SqlConnection(cadenaSQL)) 
             {
@@ -176,55 +177,58 @@ namespace DoList.Datos
 
             }
 
-        public CResultado IniciarSesion(CUsuario user)
+        public LoginVM IniciarSesion(CUsuario user)
         {
 
-            CResultado res = new CResultado();
+            LoginVM res = new LoginVM();
 
             //Ver que exista el usuario
             using var conexion = new SqlConnection(cadenaSQL);
             try
             {
 
-                using var cmd = new SqlCommand("SELECT id, nombre, contrasena FROM usuarios WHERE nombre = @nombre", conexion);
-
-                cmd.Parameters.AddWithValue("@nombre", user.Nombre);
-
-                conexion.Open();
-
-                using var rd = cmd.ExecuteReader();
-
-                if (!rd.Read())
+                using (var cmd = new SqlCommand("SELECT id, nombre, contrasena FROM usuarios WHERE nombre = @nombre", conexion))
                 {
-                    res.Exito = false;
-                    res.Descripcion = "No se encontro al usuario";
-                }
+                    cmd.Parameters.AddWithValue("@nombre", user.Nombre);
 
-                //Checar contraseña
+                    conexion.Open();
 
-                int usuarioId = (int)rd["id"];
-                string usuarioNombre = rd["nombre"].ToString();
+                    using var rd = cmd.ExecuteReader();
 
-                string hashBD = rd["contrasena"].ToString();
+                    if (!rd.Read())
+                    {
+                        res.Exito = false;
+                        res.Descripcion = "No se encontro al usuario";
+                        return res;
+                    }
 
-                if(!BCrypt.Net.BCrypt.Verify(user.Password, hashBD))
-                {
-                    res.Exito = false;
-                    res.Descripcion= "Contraseña incorrecta";
+                    //Checar contraseña
+
+                    int usuarioId = (int)rd["id"];
+                    string usuarioNombre = rd["nombre"].ToString();
+
+                    string hashBD = rd["contrasena"].ToString();
+
+                    if (!BCrypt.Net.BCrypt.Verify(user.Password, hashBD))
+                    {
+                        res.Exito = false;
+                        res.Descripcion = "Contraseña incorrecta";
+                        return res;
+                    }
+
+                    //Ver sus roles
+                    var roles = ObtenerRoles(usuarioId);
+
+
+                    //Pasar datos para la cookie
+                    res.Exito = true;
+                    res.UsuarioId = usuarioId;
+                    res.Nombre = usuarioNombre;
+                    res.Roles = roles;
+
                     return res;
+
                 }
-
-                //Ver sus roles
-                var roles = ObtenerRoles(usuarioId);
-
-
-                //Pasar datos para la cookie
-                res.Exito = true;
-                res.UsuarioId = usuarioId;
-                res.Nombre = usuarioNombre;
-                res.Roles = roles;
-
-                return res;
 
             }
 
