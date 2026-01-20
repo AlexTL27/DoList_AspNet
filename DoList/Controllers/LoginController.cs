@@ -4,6 +4,7 @@ using DoList.Models.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -34,6 +35,12 @@ namespace DoList.Controllers
         [HttpPost]
         public IActionResult Registrar(RegistroVM model)
         {
+            if (!ModelState.IsValid) 
+            {
+                //El modelo no es valido
+                return View(model);
+            }
+
             var res = datos.CrearUsuario(model.Usuario);
 
             if (res.Exito)
