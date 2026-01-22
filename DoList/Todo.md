@@ -1,6 +1,6 @@
 ﻿# Cosas pendientes
 
-## PAgina de Cerrar sesion
+
 
 ## Tareas independientes por usuario
 

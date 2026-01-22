@@ -5,6 +5,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
+
+@{
+    int contador = 1;
+    int contadorTerminadas = 1;
+
+}
+
 <h2>Tareas</h2>
 <table class="table">
     <thead class="table-light text-center ">
@@ -19,10 +27,11 @@
         @foreach(var item in Model.pendientes)
         {
             <tr>
-                <td>@item.Id</td>
+                <td>@contador</td>
                 <td>@item.Nombre</td>
                 <td>@item.Fecha</td>
 
+                @{contador++;}
                 <td class="progress-bar">
                     <form asp-action="CompletarTarea" asp-controller="Tareas"
                     method="post">
@@ -52,10 +61,11 @@
         @foreach (var item in Model.terminadas)
         {
             <tr>
-                <td>@item.Id</td>
+                <td>@contadorTerminadas</td>
                 <td>@item.Nombre</td>
                 <td>@item.Fecha</td>
 
+                @{contadorTerminadas++;}
                 <td class="progress-bar">
                     <form asp-action="EliminarTarea" asp-controller="Tareas"
                           method="post">

@@ -86,7 +86,10 @@ namespace DoList.Controllers
             //Creamos los claims 
             var claims = new List<Claim>() {
 
+                //Name identifier es el ID
                 new Claim(ClaimTypes.NameIdentifier, res.UsuarioId.ToString()),
+
+                //NAME es el nombre
                 new Claim(ClaimTypes.Name, res.Nombre)
             };
 
@@ -117,7 +120,7 @@ namespace DoList.Controllers
         public async Task<IActionResult> Salir()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Registrar");
+            return RedirectToAction("IniciarSesion");
         }
     }
 }

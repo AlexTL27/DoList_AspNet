@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
+using NuGet.Protocol.Core.Types;
 namespace DoList.Datos
 {
     public class CDatos
@@ -19,14 +20,16 @@ namespace DoList.Datos
         }
 
 
-        public bool IngresarTarea(string pTarea)
+        public bool IngresarTarea(string pTarea, int user)
         {
 
             using var conexion = new SqlConnection(cadenaSQL);
             using var cmd = new SqlCommand(
-                "INSERT INTO tarea (nombre) VALUES (@tarea)", conexion);
+                "INSERT INTO tarea (nombre, usuarioID) VALUES (@tarea, @user)", conexion);
 
             cmd.Parameters.AddWithValue("@tarea", pTarea);
+            cmd.Parameters.AddWithValue("@user", user);
+
 
             conexion.Open();
             cmd.ExecuteNonQuery();
@@ -36,16 +39,18 @@ namespace DoList.Datos
 
         }
 
-        public List<CTarea> GetTareas(int terminado)
+        public List<CTarea> GetTareas(int terminado, int user)
         {
+          
             var oLista = new List<CTarea>();
 
             using var conexion = new SqlConnection(cadenaSQL);
 
             using var cmd = new SqlCommand(
-               "SELECT * FROM tarea WHERE terminado = @valor", conexion);
+               "SELECT * FROM tarea WHERE terminado = @valor AND usuarioId = @id", conexion);
 
-            cmd.Parameters.AddWithValue("@valor", terminado); 
+            cmd.Parameters.AddWithValue("@valor", terminado);
+            cmd.Parameters.AddWithValue("@id", user);
 
             conexion.Open();
 
@@ -71,15 +76,17 @@ namespace DoList.Datos
         }
 
 
-        public void Eliminar(int ID)
+        public void Eliminar(int ID, int user)
         {
 
             using var conexion = new SqlConnection(cadenaSQL);
 
             using var cmd = new SqlCommand(
-               "delete from tarea where id = @id", conexion);
+               "delete from tarea where id = @id AND usuarioId = @user", conexion);
 
             cmd.Parameters.AddWithValue("@id", ID);
+            cmd.Parameters.AddWithValue("@user", user);
+
 
             conexion.Open();
 
@@ -87,21 +94,25 @@ namespace DoList.Datos
         }
 
 
-        public void CompletarTarea(int ID)
+        public void CompletarTarea(int ID, int user)
         {
 
             using var conexion = new SqlConnection(cadenaSQL);
 
             using var cmd = new SqlCommand(
-               "UPDATE tarea SET terminado = 1 WHERE id = @id", conexion);
+               "UPDATE tarea SET terminado = 1 WHERE id = @id AND usuarioId = @user", conexion);
 
             cmd.Parameters.AddWithValue("@id", ID);
-
+            cmd.Parameters.AddWithValue("@user", user);
             conexion.Open();
 
             cmd.ExecuteNonQuery();
         }
 
+        /// //////////////////////////////////////////
+        /// //////////////////////////////////////////
+        /// RElacionadas a datos
+        /// //////////////////////////////////////////
 
         public LoginVM CrearUsuario(CUsuario user)
         {

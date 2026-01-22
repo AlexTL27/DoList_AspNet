@@ -3,19 +3,33 @@ using Microsoft.AspNetCore.Mvc;
 using DoList.Models;
 using DoList.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 namespace DoList.Controllers
 {
     [Authorize]
     public class TareasController : Controller
     {
+        //PROPIEDADES
+        
         private readonly CDatos datos;
+        
+        
+        //Obtener usuario ID
+        private int usuarioID => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
+
+        /////////////////////////////////////
+        /////////////////////////////////////
+        /////////////////////////////////////
+        
         public TareasController(CDatos pDatos)
         {
             datos = pDatos;
         }
 
-    
+
+
+        
         public IActionResult AgregarTarea()
         {
             return View();
@@ -25,7 +39,7 @@ namespace DoList.Controllers
         public IActionResult AgregarTarea(CTarea pTarea) 
         {
 
-            if (datos.IngresarTarea(pTarea.Nombre))
+            if (datos.IngresarTarea(pTarea.Nombre, usuarioID))
             {
                 Console.WriteLine("Agregado");
                 return RedirectToAction("ListarTareas");
@@ -36,13 +50,13 @@ namespace DoList.Controllers
         
         }
 
+        //Primer controlador ejecutado por loginCOntroller
         public IActionResult ListarTareas() 
         {
+           
 
-            var pendientesV = datos.GetTareas(0);
-            var terminadasV = datos.GetTareas(1);
-
-            //COnsultar a la base de datos para recibir la lista de objetos
+            var pendientesV = datos.GetTareas(0, usuarioID);
+            var terminadasV = datos.GetTareas(1, usuarioID);
 
             var vm = new TareaVM() 
             {
@@ -57,7 +71,7 @@ namespace DoList.Controllers
         public IActionResult EliminarTarea(int id)
         {
 
-            datos.Eliminar(id);
+            datos.Eliminar(id, usuarioID);
             return RedirectToAction("ListarTareas");
         }
 
@@ -65,7 +79,7 @@ namespace DoList.Controllers
         public IActionResult CompletarTarea(int id)
         {
 
-            datos.CompletarTarea(id);
+            datos.CompletarTarea(id, usuarioID);
             return RedirectToAction("ListarTareas");
         }
     }
